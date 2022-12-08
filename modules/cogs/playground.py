@@ -16,7 +16,8 @@ class Playground(commands.Cog):
         """
         print(f'{self.bot.user} has connected to Discord!')
         await self.bot.change_presence(activity=discord.Game(name="MyGES"))
-        await self.client.send('Hello, I am the Discord bot!')
+        # send a message to the #general channel
+        await self.bot.get_channel(1049986177635201056).send('Bot is ready!')
 
     @commands.command()
     async def login(self, ctx, username: str, password: str):
@@ -44,3 +45,32 @@ class Playground(commands.Cog):
 
         # Use the send method of the ctx object to send a message to the Discord channel
         await ctx.send('Hello world!')
+
+    @commands.command()
+    async def insult(self, ctx, user: discord.Member):
+        """
+        The insult command sends an insult to the user mentioned in the command.
+
+        Parameters:
+            ctx (discord.ext.commands.Context): The context in which the command was called.
+            user (discord.Member): The user to insult.
+        """
+        await ctx.send(f'{user.mention} imbecile')
+
+    # add a listener for the on_message event when somebody other than @adia is sending a message
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        """
+        The on_message event is called when a message is sent in a Discord channel.
+
+        Parameters:
+            message (discord.Message): The message that was sent.
+        """
+        if message.author != self.bot.user:
+            # send a message to the #general channel
+            await self.bot.get_channel(1049986177635201056).send(f'{message.author.mention} arrête de parler !')
+
+
+async def setup(bot):
+    print('Playground cog loaded')
+    await bot.add_cog(Playground(bot))

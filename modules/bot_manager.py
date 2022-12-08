@@ -1,5 +1,6 @@
 import os
 import discord
+import asyncio
 from discord.ext import commands
 
 
@@ -11,12 +12,11 @@ class BotManager():
         client (discord.ext.commands.Bot): The Discord client instance.
     """
 
-    def __init__(self):
+    def __init__(self, bot):
         """
         Initializes a new instance of the BotManager class.
         """
-        self.bot = commands.Bot(
-            command_prefix='/', description='A bot that fetches MyGES data and sends notifications to users via Discord !', intents=discord.Intents.all())
+        self.bot = bot
         self._last_member = None
 
     def run(self):
@@ -34,18 +34,17 @@ class BotManager():
 
         # Run the Discord bot using the DISCORD_TOKEN environment variable
         self.bot.run(os.environ["DISCORD_TOKEN"])
-        self.load_extensions()
+        # asyncio.run(self.load_extensions())
 
     @commands.command()
     async def load(self, ctx, extension):
-        self.bot.load_extension(f'cogs.{extension}')
+        self.bot.load_extension(f'modules.cogs.{extension}')
 
     @commands.command()
     async def unload(self, ctx, extension):
-        self.bot.unload_extension(f'cogs.{extension}')
+        self.bot.unload_extension(f'modules.cogs.{extension}')
 
-    async def load_extensions(self):
-        for filename in os.listdir("./modules/cogs"):
-            if filename.endswith(".py"):
-                # cut off the .py from the file name
-                await self.bot.load_extension(f"cogs.{filename[:-3]}")
+
+def setup(bot):
+    print('BotManager cog loaded')
+    bot.add_cog(BotManager(bot))
