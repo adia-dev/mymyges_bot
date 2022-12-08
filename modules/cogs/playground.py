@@ -17,7 +17,7 @@ class Playground(commands.Cog):
         print(f'{self.bot.user} has connected to Discord!')
         await self.bot.change_presence(activity=discord.Game(name="MyGES"))
         # send a message to the #general channel
-        await self.bot.get_channel(1049986177635201056).send('Bot is ready!')
+        await self.bot.get_channel(1050377835874877493).send('Bot is ready!')
 
     @commands.command()
     async def login(self, ctx, username: str, password: str):
