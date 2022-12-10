@@ -1,4 +1,6 @@
+import asyncio
 import datetime
+import time
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -26,53 +28,31 @@ class Admin(commands.Cog):
         for guild in self.bot.guilds:
             print(f'{guild.name} (ID: {guild.id})')
         print('----------------------------------------------')
-        await self.bot.change_presence(activity=discord.Game(name="vec tes sentiments"))
-        await self.bot.tree.sync(guild=discord.Object(id=1041807074943844412))
-
-    @app_commands.command(name="introduce_me", description="Test command")
-    async def my_command(self, interaction: discord.Interaction) -> None:
-        """ /introduce_me """
-        await interaction.response.send_message("Hello from command 1!", ephemeral=True)
+        await self.bot.change_presence(activity=discord.Game(name="hacker MyGES"))
 
     @commands.command()
-    async def ping(self, ctx):
-        await ctx.send('Pong!')
+    async def sync(self, ctx):
+        try:
+            synced = await self.bot.tree.sync()
+            print(f"Synced {len(synced)} commands")
+            await ctx.send(f"Synced {synced} commands")
+        except Exception as e:
+            print(e)
 
     @commands.command()
-    @commands.guild_only()
-    @commands.is_owner()
-    async def sync(
-            ctx: Context, guilds: Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
-        print(guilds)
-        if not guilds:
-            if spec == "~":
-                synced = await ctx.bot.tree.sync(guild=ctx.guild)
-            elif spec == "*":
-                ctx.bot.tree.copy_global_to(guild=ctx.guild)
-                synced = await ctx.bot.tree.sync(guild=ctx.guild)
-            elif spec == "^":
-                ctx.bot.tree.clear_commands(guild=ctx.guild)
-                await ctx.bot.tree.sync(guild=ctx.guild)
-                synced = []
-            else:
-                synced = await ctx.bot.tree.sync()
+    async def clear_commands(self, ctx):
+        try:
+            await self.bot.tree.clear_commands(guild=discord.Object(id=1041807074943844412))
+            synced = await self.bot.tree.sync()
+            print(f"Deleted {len(synced)} commands")
+            await ctx.send(f"Deleted {synced} commands")
+        except Exception as e:
+            print(e)
 
-            await ctx.send(
-                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
-            )
-            return
-
-        ret = 0
-        await ctx.bot.tree.sync(guild=discord.Object(id=1041807074943844412))
-        ret += 1
-        # for guild in guilds:
-        #     try:
-        #     except discord.HTTPException:
-        #         pass
-        #     else:
-        #         ret += 1
-
-        await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
+    @commands.command()
+    async def clear_chat(self, ctx: Context):
+        await ctx.message.delete()
+        await ctx.channel.purge(limit=1000)
 
 
 async def setup(bot: commands.Bot):

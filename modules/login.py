@@ -1,27 +1,51 @@
 import os
 import requests
+import base64
+import asyncio
 
-LOGIN_URL = os.getenv('LOGIN_URL')
 
-
-def get_token(username: str, password: str) -> str:
+class TokenError(Exception):
     """
-    Logs in to a website using the provided username and password, and retrieves the token.
-
-    Args:
-        username (str): The username to use when logging in.
-        password (str): The password to use when logging in.
-
-    Returns:
-        str: The token retrieved from the website.
+    This exception is raised when an error occurs while getting an access token.
     """
-    payload = {
-        'username': username,
-        'password': password
+    pass
+
+
+def get_token(username: str, password: str):
+    # Encode the username and password as a base64 string
+    credentials = base64.b64encode(
+        f"{username}:{password}".encode("utf-8")).decode("utf-8")
+
+    # Set the URL for the login endpoint
+    login_url = os.getenv("LOGIN_URL")
+
+    # Set the headers for the request, including the encoded credentials in the Authorization header
+    headers = {
+        "Authorization": f"Basic {credentials}",
     }
 
-    response = requests.post(LOGIN_URL, json=payload)
-    if response.status_code != 200:
-        raise ValueError('Failed to login: Invalid credentials')
+    session = requests.Session()
+    session.max_redirects = 1
 
-    return response.json()['token']
+    try:
+        session.get(login_url, headers=headers)
+        return None
+    # except status_code == 401:
+    except requests.exceptions.HTTPError as e:
+        print(e)
+        return None
+    except Exception as e:
+        # Split the error message on the : character
+        parts = str(e).split("#")
+        # Access the second element of the resulting list to get the URL
+        token = parts[1].strip()
+        # Split the string on the & character
+        parts = token.split("&")
+
+        # Create a list of tuples, where each tuple contains a key and a value
+        pairs = [(part.split("=")[0], part.split("=")[1]) for part in parts]
+
+        # Use the dict() constructor to create a dictionary from the list of tuples
+        dictionary = dict(pairs)
+
+        return dictionary["access_token"]
