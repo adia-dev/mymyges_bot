@@ -24,7 +24,10 @@ def get_token(user_id: str) -> str:
     Returns:
         str: The token saved in Redis for the user.
     """
-    return redis_client.get(user_id)
+    if redis_client.exists(user_id):
+        return redis_client.get(user_id).decode("utf-8")
+    else:
+        return None
 
 
 def delete_token(user_id: str):
