@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-bot = commands.Bot(command_prefix='/',
+bot = commands.Bot(command_prefix='!',
                    description='A bot that fetches MyGES data and sends notifications to users via Discord !', intents=discord.Intents.all())
 manager = BotManager(bot)
 
@@ -31,4 +31,11 @@ async def main():
     await load_extensions()
     await manager.start()
 
-asyncio.run(main())
+if __name__ == '__main__':
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        asyncio.run(main=main())
+    except KeyboardInterrupt:
+        print("Closing bot...")
+        pass
