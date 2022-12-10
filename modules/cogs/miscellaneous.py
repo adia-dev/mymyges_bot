@@ -2,7 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from discord import app_commands
-from modules import login, data_manager, notification
+from modules import login, data_manager
 from utils import redis_manager
 from discord.ext.commands import Greedy, Context
 from typing import Literal, Optional
