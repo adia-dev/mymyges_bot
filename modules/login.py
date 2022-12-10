@@ -17,7 +17,7 @@ def get_token(username: str, password: str):
         f"{username}:{password}".encode("utf-8")).decode("utf-8")
 
     # Set the URL for the login endpoint
-    login_url = os.getenv("LOGIN_URL")
+    login_url = os.getenv("GES_AUTH_URL")
 
     # Set the headers for the request, including the encoded credentials in the Authorization header
     headers = {
