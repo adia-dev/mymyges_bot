@@ -31,27 +31,17 @@ class Admin(commands.Cog):
         await self.bot.change_presence(activity=discord.Game(name="hacker MyGES"))
 
     @commands.command()
-    async def sync(self, ctx):
+    async def sync(self, ctx: Context):
+        await ctx.message.delete()
         try:
             synced = await self.bot.tree.sync()
-            print(f"Synced {len(synced)} commands")
-            await ctx.send(f"Synced {synced} commands")
-        except Exception as e:
-            print(e)
-
-    @commands.command()
-    async def clear_commands(self, ctx):
-        try:
-            await self.bot.tree.clear_commands(guild=discord.Object(id=1041807074943844412))
-            synced = await self.bot.tree.sync()
-            print(f"Deleted {len(synced)} commands")
-            await ctx.send(f"Deleted {synced} commands")
+            print(f"Synced {len(synced)} commands !")
+            await ctx.send(f"Synced {len(synced)} commands !")
         except Exception as e:
             print(e)
 
     @commands.command()
     async def clear_chat(self, ctx: Context):
-        await ctx.message.delete()
         await ctx.channel.purge(limit=1000)
 
 
