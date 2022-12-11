@@ -12,6 +12,7 @@
 
 # store the endpoints in a dictionary, with the key being the endpoint name and the value being the endpoint itself
 import os
+import requests
 
 
 ENDPOINTS = {
@@ -38,4 +39,34 @@ def get_endpoint(endpoint: str, **kwargs) -> str:
     if endpoint in ENDPOINTS:
         return os.getenv("GES_API_URL") + ENDPOINTS[endpoint].format(**kwargs)
     else:
+        return None
+
+
+def get_request(endpoint: str, token: str, **kwargs) -> dict:
+    """Make a GET request to the API
+
+    Args:
+        endpoint (str): Endpoint to request
+        token (str): User's token
+        **kwargs: Parameters to pass to the endpoint
+
+
+    Returns:
+        dict: Response
+    """
+    url = get_endpoint(endpoint, **kwargs)
+
+    headers = {
+        'Authorization': 'Bearer ' + token,
+    }
+
+    session = requests.Session()
+    session.max_redirects = 1
+
+    try:
+        response = session.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+    except requests.exceptions.HTTPError as e:
+        print(e)
         return None
