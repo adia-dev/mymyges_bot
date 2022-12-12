@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from utils import redis_manager, endpoints
-from modules import user
+from modules import myges_api
 
 
 class User(commands.Cog):
@@ -16,7 +16,7 @@ class User(commands.Cog):
         if token is None:
             await interaction.response.send_message("You need to login first, use /login to log in", ephemeral=True)
         else:
-            profile = user.get_profile(token)
+            profile = myges_api.get_profile(token)
             # embed = discord.Embed(title="Profile", description="Your profile")
             embed = discord.Embed(title="Profile", description="Your profile")
             embed.set_author(name=profile["firstname"] + " " + profile["name"])
@@ -81,7 +81,7 @@ class User(commands.Cog):
         if token is None:
             await interaction.response.send_message("You need to login first, use /login to log in", ephemeral=True)
         else:
-            grades = user.get_grades(token, year)
+            grades = myges_api.get_grades(token, year)
             if course is not None and course in [grade["course"] for grade in grades]:
                 grades = [grade for grade in grades if grade["course"] == course]
             embed = discord.Embed(title="Grades", description="Your grades")
